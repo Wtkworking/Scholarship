@@ -27,7 +27,7 @@
   <div class="grid">
     <div class="form-group">
       <label>คณะ <span style="color:red;">*</span></label>
-      <select id="faculty"><option value="">เลือกคณะ</option></select>
+      <select id="faculty"><option value="">กำลังดึงข้อมูล...</option></select>
     </div>
 
     <div class="form-group">
@@ -35,7 +35,7 @@
       <select id="major"><option value="">เลือกสาขา</option></select>
     </div>
 
-    <!-- Dropdown สถานที่เรียน (แสดงเฉพาะเมื่อตรงเงื่อนไข) -->
+    <!-- Dropdown สถานที่เรียน -->
     <div class="form-group full" id="campusGroup" style="display: none;">
       <label>สถานที่เรียน <span style="color:red;">*</span></label>
       <select id="campusLocation">
@@ -105,7 +105,7 @@
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbzZo85CBe_qCvXCzAsOwIu8wE8ADy4kBXPT7u6VYRWDysQ2RX1aEymrapHJnmfHAAnucQ/exec";
+const API = "https://script.google.com/macros/s/AKfycby_eTuSwMXq1ItTpKFstQqeZxFQg1DMbpOSo6bFU14XGRgvT8n2GljYv3BGy0ETqdgTuQ/exec";
 let allData = [];
 
 const faculty = document.getElementById("faculty");
@@ -120,25 +120,27 @@ loadData();
 
 async function loadData() {
   try {
-    const res = await fetch(API, { method: "GET", redirect: "follow" });
+    // ใส่ ?t= เพื่อบังคับไม่ให้ Browser ใช้ Cache ตัวเก่าที่ค้างในเครื่อง
+    const res = await fetch(API + "?t=" + new Date().getTime(), { method: "GET", redirect: "follow" });
     if (!res.ok) throw new Error("โหลดข้อมูลไม่สำเร็จ");
     allData = await res.json();
+    
+    faculty.innerHTML = '<option value="">เลือกคณะ</option>';
     const faculties = [...new Set(allData.map(x => x.faculty))];
     faculties.forEach(f => {
       faculty.innerHTML += `<option value="${f}">${f}</option>`;
     });
   } catch (error) {
     console.error(error);
-    alert("ไม่สามารถโหลดข้อมูลทุนได้");
+    faculty.innerHTML = '<option value="">โหลดข้อมูลไม่สำเร็จ</option>';
+    alert("ไม่สามารถโหลดข้อมูลทุนได้ กรุณารีเฟรชหน้าเว็บ");
   }
 }
 
-// ฟังก์ชันตรวจสอบและอัปเดตตัวเลือกสถานที่เรียน
 function updateCampusOptions() {
   const fVal = faculty.value.trim();
   const mVal = major.value.trim();
 
-  // กำหนดข้อความเริ่มต้นแบบสีเทาและกดเลือกไม่ได้ (disabled selected)
   campusLocation.innerHTML = '<option value="" disabled selected style="color: gray;">-- เลือกสถานที่เรียน --</option>';
 
   if (fVal === "BA") {
@@ -146,7 +148,7 @@ function updateCampusOptions() {
     ["แจ้งวัฒนะ", "EEC", "Online"].forEach(opt => {
       campusLocation.innerHTML += `<option value="${opt}">${opt}</option>`;
     });
-  } else if (fVal === "FBM" && mVal === "MFW") {
+  } else if (fVal === "FB" && mVal === "MFW") {
     campusGroup.style.display = "flex";
     ["แจ้งวัฒนะ", "EEC"].forEach(opt => {
       campusLocation.innerHTML += `<option value="${opt}">${opt}</option>`;
@@ -201,7 +203,6 @@ scholarship.addEventListener("change", () => {
 document.getElementById("saveBtn").addEventListener("click", async () => {
   const btn = document.getElementById("saveBtn");
 
-  // ตรวจสอบสถานที่เรียน
   let finalCampus = "แจ้งวัฒนะ";
   const isCampusRequired = campusGroup.style.display !== "none";
   if (isCampusRequired) {
