@@ -57,7 +57,7 @@
 
     <div class="form-group">
       <label>เลขบัตรประชาชน <span style="color:red;">*</span></label>
-      <input type="text" id="citizenId">
+      <input type="text" id="citizenId" maxlength="13" placeholder="ตัวอย่าง: 1100400123456 (ตัวเลข 13 หลัก)" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
     </div>
 
     <div class="form-group">
@@ -72,17 +72,17 @@
 
     <div class="form-group">
       <label>ชื่อ-สกุล <span style="color:red;">*</span></label>
-      <input type="text" id="fullname">
+      <input type="text" id="fullname" placeholder="ตัวอย่าง: สมชาย ใจดี (ไม่ต้องพิมพ์คำนำหน้า)">
     </div>
 
     <div class="form-group">
       <label>เบอร์ติดต่อ <span style="color:red;">*</span></label>
-      <input type="text" id="phone">
+      <input type="text" id="phone" maxlength="10" placeholder="ตัวอย่าง: 0812345678 (ตัวเลข 10 หลัก)" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
     </div>
 
     <div class="form-group">
       <label>โรคประจำตัว <span style="color:red;">*</span></label>
-      <input type="text" id="disease" placeholder="หากไม่มีให้ระบุ -">
+      <input type="text" id="disease" placeholder="ตัวอย่าง: โรคหอบหืด หรือ หากไม่มีให้ระบุ -">
     </div>
 
     <div class="form-group">
@@ -96,12 +96,12 @@
 
     <div class="form-group">
       <label>ผู้สัมภาษณ์ <span style="color:red;">*</span></label>
-      <input type="text" id="interviewer">
+      <input type="text" id="interviewer" placeholder="ตัวอย่าง: อ.วิชัย หรือระบุชื่อ-สกุล">
     </div>
 
     <div class="form-group full">
       <label>ข้อเสนอแนะเพิ่มเติม (ถ้ามี)</label>
-      <textarea id="remark"></textarea>
+      <textarea id="remark" placeholder="ตัวอย่าง: เกรดเฉลี่ย 3.50 หรือหมายเหตุเพิ่มเติม (ถ้าไม่มีให้เว้นว่างไว้)"></textarea>
     </div>
 
     <div class="form-group full">
@@ -218,14 +218,31 @@ document.getElementById("saveBtn").addEventListener("click", async () => {
     finalCampus = campusLocation.value;
   }
 
+  const citizenIdVal = document.getElementById("citizenId").value.trim();
+  const phoneVal = document.getElementById("phone").value.trim();
+
+  // 🔴 ตรวจสอบความถูกต้องของเลขบัตรประชาชน (13 หลัก)
+  if (citizenIdVal.length !== 13) {
+    alert("กรุณากรอกเลขบัตรประชาชนให้ครบถ้วน 13 หลัก (เฉพาะตัวเลข ไม่ต้องใส่ขีด)");
+    document.getElementById("citizenId").focus();
+    return;
+  }
+
+  // 🔴 ตรวจสอบความถูกต้องของเบอร์โทรศัพท์ (10 หลัก)
+  if (phoneVal.length !== 10) {
+    alert("กรุณากรอกเบอร์โทรศัพท์ให้ครบถ้วน 10 หลัก (เฉพาะตัวเลข ไม่ต้องใส่ขีด)");
+    document.getElementById("phone").focus();
+    return;
+  }
+
   const data = {
     faculty: faculty.value,
     major: major.value,
     scholarship: scholarship.value,
-    citizenId: document.getElementById("citizenId").value.trim(),
+    citizenId: citizenIdVal,
     prefix: document.getElementById("prefix").value,
     fullname: document.getElementById("fullname").value.trim(),
-    phone: document.getElementById("phone").value.trim(),
+    phone: phoneVal,
     disease: document.getElementById("disease").value.trim(),
     learning_format: document.getElementById("learning_format").value,
     interviewer: document.getElementById("interviewer").value.trim(),
