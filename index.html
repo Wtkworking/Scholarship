@@ -83,16 +83,30 @@
 
     .badge {
       display: inline-block;
-      padding: 4px 14px;
-      border-radius: 20px;
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid rgba(52, 211, 153, 0.4);
-      color: var(--neon-light);
+      padding: 6px 18px;
+      border-radius: 50px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1.5px solid var(--neon-light);
+      color: #ffffff;
       font-size: 13px;
-      font-weight: 500;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
-      box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      animation: neonPulse 2s infinite alternate ease-in-out;
+    }
+
+    @keyframes neonPulse {
+      0% {
+        border-color: rgba(52, 211, 153, 0.4);
+        box-shadow: 0 0 5px rgba(16, 185, 129, 0.2), inset 0 0 5px rgba(16, 185, 129, 0.1);
+        text-shadow: 0 0 4px rgba(52, 211, 153, 0.4);
+      }
+      100% {
+        border-color: #34d399;
+        box-shadow: 0 0 15px rgba(52, 211, 153, 0.8), 0 0 25px rgba(16, 185, 129, 0.5), inset 0 0 8px rgba(52, 211, 153, 0.4);
+        text-shadow: 0 0 8px #6ee7b7, 0 0 16px #34d399;
+      }
     }
 
     h2 {
@@ -263,7 +277,7 @@
 
 <div class="container">
   <div class="header-box">
-    <div class="badge">FINTECH SCHOLARSHIP SYSTEM</div>
+    <div class="badge">PIM SCHOLARSHIP SYSTEM</div>
     <h2>ระบบลงทะเบียนและจัดสรรทุนการศึกษา</h2>
   </div>
 
