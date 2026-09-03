@@ -353,7 +353,7 @@
 
     <div class="form-group">
       <label>ผู้สัมภาษณ์ <span class="req">*</span></label>
-      <input type="text" id="interviewer" placeholder="ตัวอย่าง: อ.วิชัย หรือระบุชื่อผู้สัมภาษณ์">
+      <input type="text" id="interviewer" placeholder="ตัวอย่าง: อ.วุฒิกานต์ หรือระบุชื่อผู้สัมภาษณ์">
     </div>
 
     <div class="form-group full">
@@ -524,7 +524,7 @@ document.getElementById("saveBtn").addEventListener("click", async () => {
 
   try {
     btn.disabled = true;
-    btn.innerText = "กำลังประมวลผลธุรกรรม...";
+    btn.innerText = "กำลังดำเนินการ...";
 
     const response = await fetch(API, {
       method: "POST",
