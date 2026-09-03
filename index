@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ระบบมอบทุนการศึกษา</title>
+  <style>
+    body { font-family: sans-serif; background: #f5f7fa; margin: 0; padding: 30px; }
+    .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 0 15px rgba(0,0,0,.08); }
+    h2 { text-align: center; color: #1f4e79; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .form-group { display: flex; flex-direction: column; }
+    .full { grid-column: 1 / -1; }
+    label { margin-bottom: 5px; font-weight: bold; }
+    input, select, textarea { padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-family: inherit; }
+    textarea { min-height: 100px; }
+    button { background: #0d6efd; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 16px; }
+    button:hover { opacity: .9; }
+    .quota { color: green; font-size: 14px; margin-top: 5px; }
+    @media(max-width:768px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>แบบฟอร์มมอบทุนการศึกษา</h2>
+  <div class="grid">
+    <div class="form-group">
+      <label>คณะ <span style="color:red;">*</span></label>
+      <select id="faculty"><option value="">เลือกคณะ</option></select>
+    </div>
+
+    <div class="form-group">
+      <label>สาขา <span style="color:red;">*</span></label>
+      <select id="major"><option value="">เลือกสาขา</option></select>
+    </div>
+
+    <!-- Dropdown สถานที่เรียน (แสดงเฉพาะเมื่อตรงเงื่อนไข) -->
+    <div class="form-group full" id="campusGroup" style="display: none;">
+      <label>สถานที่เรียน <span style="color:red;">*</span></label>
+      <select id="campusLocation">
+        <option value="" disabled selected style="color: gray;">-- เลือกสถานที่เรียน --</option>
+      </select>
+    </div>
+
+    <div class="form-group full">
+      <label>ประเภททุน <span style="color:red;">*</span></label>
+      <select id="scholarship"><option value="">เลือกทุน</option></select>
+      <div class="quota" id="quotaInfo"></div>
+    </div>
+
+    <div class="form-group">
+      <label>เลขบัตรประชาชน <span style="color:red;">*</span></label>
+      <input type="text" id="citizenId">
+    </div>
+
+    <div class="form-group">
+      <label>คำนำหน้า <span style="color:red;">*</span></label>
+      <select id="prefix">
+        <option value="">เลือกคำนำหน้า</option>
+        <option value="นาย">นาย</option>
+        <option value="นางสาว">นางสาว</option>
+        <option value="นาง">นาง</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>ชื่อ-สกุล <span style="color:red;">*</span></label>
+      <input type="text" id="fullname">
+    </div>
+
+    <div class="form-group">
+      <label>เบอร์ติดต่อ <span style="color:red;">*</span></label>
+      <input type="text" id="phone">
+    </div>
+
+    <div class="form-group">
+      <label>โรคประจำตัว <span style="color:red;">*</span></label>
+      <input type="text" id="disease" placeholder="หากไม่มีให้ระบุ -">
+    </div>
+
+    <div class="form-group">
+      <label>รอบการเรียน <span style="color:red;">*</span></label>
+      <select id="learning_format">
+        <option value="">เลือกรอบการเรียน</option>
+        <option value="ทำงานก่อน">ทำงานก่อน</option>
+        <option value="เรียนก่อน">เรียนก่อน</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>ผู้สัมภาษณ์ <span style="color:red;">*</span></label>
+      <input type="text" id="interviewer">
+    </div>
+
+    <div class="form-group full">
+      <label>ข้อเสนอแนะเพิ่มเติม (ถ้ามี)</label>
+      <textarea id="remark"></textarea>
+    </div>
+
+    <div class="form-group full">
+      <button id="saveBtn">บันทึกข้อมูล</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = "https://script.google.com/macros/s/AKfycbzZo85CBe_qCvXCzAsOwIu8wE8ADy4kBXPT7u6VYRWDysQ2RX1aEymrapHJnmfHAAnucQ/exec";
+let allData = [];
+
+const faculty = document.getElementById("faculty");
+const major = document.getElementById("major");
+const scholarship = document.getElementById("scholarship");
+const quotaInfo = document.getElementById("quotaInfo");
+
+const campusGroup = document.getElementById("campusGroup");
+const campusLocation = document.getElementById("campusLocation");
+
+loadData();
+
+async function loadData() {
+  try {
+    const res = await fetch(API, { method: "GET", redirect: "follow" });
+    if (!res.ok) throw new Error("โหลดข้อมูลไม่สำเร็จ");
+    allData = await res.json();
+    const faculties = [...new Set(allData.map(x => x.faculty))];
+    faculties.forEach(f => {
+      faculty.innerHTML += `<option value="${f}">${f}</option>`;
+    });
+  } catch (error) {
+    console.error(error);
+    alert("ไม่สามารถโหลดข้อมูลทุนได้");
+  }
+}
+
+// ฟังก์ชันตรวจสอบและอัปเดตตัวเลือกสถานที่เรียน
+function updateCampusOptions() {
+  const fVal = faculty.value.trim();
+  const mVal = major.value.trim();
+
+  // กำหนดข้อความเริ่มต้นแบบสีเทาและกดเลือกไม่ได้ (disabled selected)
+  campusLocation.innerHTML = '<option value="" disabled selected style="color: gray;">-- เลือกสถานที่เรียน --</option>';
+
+  if (fVal === "BA") {
+    campusGroup.style.display = "flex";
+    ["แจ้งวัฒนะ", "EEC", "Online"].forEach(opt => {
+      campusLocation.innerHTML += `<option value="${opt}">${opt}</option>`;
+    });
+  } else if (fVal === "FBM" && mVal === "MFW") {
+    campusGroup.style.display = "flex";
+    ["แจ้งวัฒนะ", "EEC"].forEach(opt => {
+      campusLocation.innerHTML += `<option value="${opt}">${opt}</option>`;
+    });
+  } else {
+    campusGroup.style.display = "none";
+  }
+}
+
+faculty.addEventListener("change", () => {
+  major.innerHTML = '<option value="">เลือกสาขา</option>';
+  scholarship.innerHTML = '<option value="">เลือกทุน</option>';
+  quotaInfo.innerHTML = '';
+
+  const majors = [
+    ...new Set(
+      allData.filter(x => x.faculty === faculty.value).map(x => x.major)
+    )
+  ];
+  majors.forEach(m => {
+    major.innerHTML += `<option value="${m}">${m}</option>`;
+  });
+
+  updateCampusOptions();
+});
+
+major.addEventListener("change", () => {
+  scholarship.innerHTML = '<option value="">เลือกทุน</option>';
+  quotaInfo.innerHTML = '';
+
+  const scholarships = allData.filter(x =>
+    x.faculty === faculty.value && x.major === major.value
+  );
+  scholarships.forEach(item => {
+    scholarship.innerHTML += `<option value="${item.scholarship}">${item.scholarship}</option>`;
+  });
+
+  updateCampusOptions();
+});
+
+scholarship.addEventListener("change", () => {
+  const selected = allData.find(x =>
+    x.faculty === faculty.value &&
+    x.major === major.value &&
+    x.scholarship === scholarship.value
+  );
+  if (selected) {
+    quotaInfo.innerHTML = `โควต้าคงเหลือ : ${selected.quota}`;
+  }
+});
+
+document.getElementById("saveBtn").addEventListener("click", async () => {
+  const btn = document.getElementById("saveBtn");
+
+  // ตรวจสอบสถานที่เรียน
+  let finalCampus = "แจ้งวัฒนะ";
+  const isCampusRequired = campusGroup.style.display !== "none";
+  if (isCampusRequired) {
+    if (!campusLocation.value) {
+      alert("กรุณาเลือกสถานที่เรียน");
+      return;
+    }
+    finalCampus = campusLocation.value;
+  }
+
+  const data = {
+    faculty: faculty.value,
+    major: major.value,
+    scholarship: scholarship.value,
+    citizenId: document.getElementById("citizenId").value.trim(),
+    prefix: document.getElementById("prefix").value,
+    fullname: document.getElementById("fullname").value.trim(),
+    phone: document.getElementById("phone").value.trim(),
+    disease: document.getElementById("disease").value.trim(),
+    learning_format: document.getElementById("learning_format").value,
+    interviewer: document.getElementById("interviewer").value.trim(),
+    remark: document.getElementById("remark").value.trim(),
+    campusLocation: finalCampus
+  };
+
+  if (
+    !data.faculty ||
+    !data.major ||
+    !data.scholarship ||
+    !data.citizenId ||
+    !data.prefix ||
+    !data.fullname ||
+    !data.phone ||
+    !data.disease ||
+    !data.learning_format ||
+    !data.interviewer
+  ) {
+    alert("กรุณากรอกข้อมูลให้ครบถ้วนทุกช่องก่อนบันทึกข้อมูล");
+    return;
+  }
+
+  try {
+    btn.disabled = true;
+    btn.innerText = "กำลังบันทึก...";
+
+    const response = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      redirect: "follow",
+      body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      alert("บันทึกสำเร็จ\nเหลือโควต้า " + result.remaining);
+      location.reload();
+    } else {
+      alert(result.message || "เกิดข้อผิดพลาด");
+    }
+  } catch (error) {
+    console.error(error);
+    alert("ไม่สามารถเชื่อมต่อ Apps Script ได้");
+  } finally {
+    btn.disabled = false;
+    btn.innerText = "บันทึกข้อมูล";
+  }
+});
+</script>
+</body>
+</html>
