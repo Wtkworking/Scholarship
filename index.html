@@ -3,37 +3,280 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ระบบมอบทุนการศึกษา</title>
+  <title>ระบบมอบทุนการศึกษา | FinTech Scholarship Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
   <style>
-    body { font-family: sans-serif; background: #f5f7fa; margin: 0; padding: 30px; }
-    .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 0 15px rgba(0,0,0,.08); }
-    h2 { text-align: center; color: #1f4e79; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .form-group { display: flex; flex-direction: column; }
+    :root {
+      --bg-dark: #07130e;
+      --card-bg: rgba(13, 33, 24, 0.75);
+      --card-border: rgba(16, 185, 129, 0.28);
+      --neon-green: #10b981;
+      --neon-light: #34d399;
+      --neon-glow: rgba(16, 185, 129, 0.4);
+      --text-main: #f0fdf4;
+      --text-muted: #86efac;
+      --input-bg: rgba(6, 20, 14, 0.85);
+      --input-border: rgba(52, 211, 153, 0.3);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Prompt', sans-serif;
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.18), transparent 45%),
+        linear-gradient(rgba(16, 185, 129, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(16, 185, 129, 0.05) 1px, transparent 1px);
+      background-size: 100% 100%, 40px 40px, 40px 40px;
+      margin: 0;
+      padding: 40px 20px;
+      min-height: 100vh;
+      color: var(--text-main);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ละอองไฟวิบวับพื้นหลัง */
+    .sparkle {
+      position: fixed;
+      width: 4px;
+      height: 4px;
+      background: #6ee7b7;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #34d399, 0 0 20px #10b981;
+      animation: floatSparkle 6s infinite linear;
+      opacity: 0;
+      z-index: 0;
+    }
+
+    @keyframes floatSparkle {
+      0% { transform: translateY(100vh) scale(0); opacity: 0; }
+      50% { opacity: 0.8; }
+      100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: auto;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.5),
+        0 0 30px rgba(16, 185, 129, 0.15),
+        inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    }
+
+    .header-box {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 20px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(52, 211, 153, 0.4);
+      color: var(--neon-light);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ffffff 40%, var(--neon-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 25px rgba(52, 211, 153, 0.4);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
     .full { grid-column: 1 / -1; }
-    label { margin-bottom: 5px; font-weight: bold; }
-    input, select, textarea { padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-family: inherit; }
-    textarea { min-height: 100px; }
-    button { background: #0d6efd; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 16px; }
-    button:hover { opacity: .9; }
-    .quota { color: green; font-size: 14px; margin-top: 5px; }
-    @media(max-width:768px) { .grid { grid-template-columns: 1fr; } }
+
+    label {
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    label span.req {
+      color: #34d399;
+      font-weight: bold;
+    }
+
+    input, select, textarea {
+      padding: 12px 16px;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 12px;
+      font-family: inherit;
+      color: white;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.25s ease;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: rgba(255, 255, 255, 0.25);
+      font-size: 13px;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--neon-light);
+      box-shadow: 0 0 15px var(--neon-glow), inset 0 1px 2px rgba(0,0,0,0.5);
+      background: rgba(10, 30, 20, 0.95);
+    }
+
+    select option {
+      background: #0d2118;
+      color: white;
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    /* กล่องแสดงยอดโควต้า */
+    .quota-card {
+      margin-top: 8px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      background: rgba(16, 185, 129, 0.1);
+      border-left: 3px solid var(--neon-light);
+      font-size: 13px;
+      color: var(--neon-light);
+      display: none;
+      align-items: center;
+      gap: 6px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ปุ่มบันทึกข้อมูลแนว Cyber-Fintech พร้อมแสง Shimmer */
+    button {
+      position: relative;
+      background: linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%);
+      color: #022c22;
+      border: none;
+      padding: 16px 24px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.45);
+      overflow: hidden;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 35px rgba(52, 211, 153, 0.65);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    button:disabled {
+      background: #334155;
+      color: #94a3b8;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* เส้นแสง Shimmer พาดผ่านปุ่ม */
+    button::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 40%;
+      height: 200%;
+      background: linear-gradient(
+        60deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.4), 
+        transparent
+      );
+      transform: rotate(25deg);
+      animation: shimmer 3.5s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { left: -60%; }
+      30%, 100% { left: 140%; }
+    }
+
+    @media(max-width: 768px) {
+      .container { padding: 25px 20px; }
+      .grid { grid-template-columns: 1fr; }
+      h2 { font-size: 22px; }
+    }
   </style>
 </head>
 <body>
 
+  <!-- ประกายไฟวิบวับฉากหลัง -->
+  <div class="sparkle" style="left: 10%; animation-delay: 0s;"></div>
+  <div class="sparkle" style="left: 25%; animation-delay: 2s;"></div>
+  <div class="sparkle" style="left: 60%; animation-delay: 1.2s;"></div>
+  <div class="sparkle" style="left: 80%; animation-delay: 3.5s;"></div>
+  <div class="sparkle" style="left: 92%; animation-delay: 0.5s;"></div>
+
 <div class="container">
-  <h2>แบบฟอร์มมอบทุนการศึกษา</h2>
+  <div class="header-box">
+    <div class="badge">FINTECH SCHOLARSHIP SYSTEM</div>
+    <h2>ระบบลงทะเบียนและจัดสรรทุนการศึกษา</h2>
+  </div>
+
   <div class="grid">
     <div class="form-group">
-      <label>คณะ <span style="color:red;">*</span></label>
+      <label>คณะ <span class="req">*</span></label>
       <select id="faculty">
         <option value="" disabled selected style="color: gray;">-- กำลังดึงข้อมูล... --</option>
       </select>
     </div>
 
     <div class="form-group">
-      <label>สาขา <span style="color:red;">*</span></label>
+      <label>สาขา <span class="req">*</span></label>
       <select id="major">
         <option value="" disabled selected style="color: gray;">-- เลือกสาขา --</option>
       </select>
@@ -41,27 +284,27 @@
 
     <!-- Dropdown สถานที่เรียน -->
     <div class="form-group full" id="campusGroup" style="display: none;">
-      <label>สถานที่เรียน <span style="color:red;">*</span></label>
+      <label>สถานที่เรียน <span class="req">*</span></label>
       <select id="campusLocation">
         <option value="" disabled selected style="color: gray;">-- เลือกสถานที่เรียน --</option>
       </select>
     </div>
 
     <div class="form-group full">
-      <label>ประเภททุน <span style="color:red;">*</span></label>
+      <label>ประเภททุนการศึกษา <span class="req">*</span></label>
       <select id="scholarship">
         <option value="" disabled selected style="color: gray;">-- เลือกทุน --</option>
       </select>
-      <div class="quota" id="quotaInfo"></div>
+      <div class="quota-card" id="quotaInfo"></div>
     </div>
 
     <div class="form-group">
-      <label>เลขบัตรประชาชน <span style="color:red;">*</span></label>
-      <input type="text" id="citizenId" maxlength="13" placeholder="ตัวอย่าง: 1100400123456 (ตัวเลข 13 หลัก)" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+      <label>เลขบัตรประชาชน <span class="req">*</span></label>
+      <input type="text" id="citizenId" maxlength="13" placeholder="ตัวอย่าง: 1100400123456 (13 หลัก)" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
     </div>
 
     <div class="form-group">
-      <label>คำนำหน้า <span style="color:red;">*</span></label>
+      <label>คำนำหน้า <span class="req">*</span></label>
       <select id="prefix">
         <option value="" disabled selected style="color: gray;">-- เลือกคำนำหน้า --</option>
         <option value="นาย">นาย</option>
@@ -71,22 +314,22 @@
     </div>
 
     <div class="form-group">
-      <label>ชื่อ-สกุล <span style="color:red;">*</span></label>
-      <input type="text" id="fullname" placeholder="ตัวอย่าง: สมชาย ใจดี (ไม่ต้องพิมพ์คำนำหน้า)">
+      <label>ชื่อ-สกุล <span class="req">*</span></label>
+      <input type="text" id="fullname" placeholder="ตัวอย่าง: สมชาย ใจดี (ไม่ต้องระบุคำนำหน้า)">
     </div>
 
     <div class="form-group">
-      <label>เบอร์ติดต่อ <span style="color:red;">*</span></label>
-      <input type="text" id="phone" maxlength="10" placeholder="ตัวอย่าง: 0812345678 (ตัวเลข 10 หลัก)" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+      <label>เบอร์ติดต่อ <span class="req">*</span></label>
+      <input type="text" id="phone" maxlength="10" placeholder="ตัวอย่าง: 0812345678 (10 หลัก)" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
     </div>
 
     <div class="form-group">
-      <label>โรคประจำตัว <span style="color:red;">*</span></label>
-      <input type="text" id="disease" placeholder="ตัวอย่าง: โรคหอบหืด หรือ หากไม่มีให้ระบุ -">
+      <label>โรคประจำตัว <span class="req">*</span></label>
+      <input type="text" id="disease" placeholder="หากไม่มีให้ระบุ -">
     </div>
 
     <div class="form-group">
-      <label>รอบการเรียน <span style="color:red;">*</span></label>
+      <label>รอบการเรียน <span class="req">*</span></label>
       <select id="learning_format">
         <option value="" disabled selected style="color: gray;">-- เลือกรอบการเรียน --</option>
         <option value="ทำงานก่อน">ทำงานก่อน</option>
@@ -95,17 +338,17 @@
     </div>
 
     <div class="form-group">
-      <label>ผู้สัมภาษณ์ <span style="color:red;">*</span></label>
-      <input type="text" id="interviewer" placeholder="ตัวอย่าง: อ.วิชัย หรือระบุชื่อ-สกุล">
+      <label>ผู้สัมภาษณ์ <span class="req">*</span></label>
+      <input type="text" id="interviewer" placeholder="ตัวอย่าง: อ.วิชัย หรือระบุชื่อผู้สัมภาษณ์">
     </div>
 
     <div class="form-group full">
       <label>ข้อเสนอแนะเพิ่มเติม (ถ้ามี)</label>
-      <textarea id="remark" placeholder="ตัวอย่าง: เกรดเฉลี่ย 3.50 หรือหมายเหตุเพิ่มเติม (ถ้าไม่มีให้เว้นว่างไว้)"></textarea>
+      <textarea id="remark" placeholder="ตัวอย่าง: เกรดเฉลี่ยหรือหมายเหตุพิเศษ (หากไม่มีสามารถเว้นว่างได้)"></textarea>
     </div>
 
     <div class="form-group full">
-      <button id="saveBtn">บันทึกข้อมูล</button>
+      <button id="saveBtn">ยืนยันการจัดสรรทุนการศึกษา</button>
     </div>
   </div>
 </div>
@@ -166,7 +409,7 @@ function updateCampusOptions() {
 faculty.addEventListener("change", () => {
   major.innerHTML = '<option value="" disabled selected style="color: gray;">-- เลือกสาขา --</option>';
   scholarship.innerHTML = '<option value="" disabled selected style="color: gray;">-- เลือกทุน --</option>';
-  quotaInfo.innerHTML = '';
+  quotaInfo.style.display = "none";
 
   const majors = [
     ...new Set(
@@ -182,7 +425,7 @@ faculty.addEventListener("change", () => {
 
 major.addEventListener("change", () => {
   scholarship.innerHTML = '<option value="" disabled selected style="color: gray;">-- เลือกทุน --</option>';
-  quotaInfo.innerHTML = '';
+  quotaInfo.style.display = "none";
 
   const scholarships = allData.filter(x =>
     x.faculty === faculty.value && x.major === major.value
@@ -201,7 +444,8 @@ scholarship.addEventListener("change", () => {
     x.scholarship === scholarship.value
   );
   if (selected) {
-    quotaInfo.innerHTML = `โควต้าคงเหลือ : ${selected.quota}`;
+    quotaInfo.innerHTML = `⚡ โควต้าคงเหลือปัจจุบัน : <strong>${selected.quota}</strong> ที่นั่ง`;
+    quotaInfo.style.display = "flex";
   }
 });
 
@@ -221,16 +465,14 @@ document.getElementById("saveBtn").addEventListener("click", async () => {
   const citizenIdVal = document.getElementById("citizenId").value.trim();
   const phoneVal = document.getElementById("phone").value.trim();
 
-  // 🔴 ตรวจสอบความถูกต้องของเลขบัตรประชาชน (13 หลัก)
   if (citizenIdVal.length !== 13) {
-    alert("กรุณากรอกเลขบัตรประชาชนให้ครบถ้วน 13 หลัก (เฉพาะตัวเลข ไม่ต้องใส่ขีด)");
+    alert("กรุณากรอกเลขบัตรประชาชนให้ครบถ้วน 13 หลัก (เฉพาะตัวเลข)");
     document.getElementById("citizenId").focus();
     return;
   }
 
-  // 🔴 ตรวจสอบความถูกต้องของเบอร์โทรศัพท์ (10 หลัก)
   if (phoneVal.length !== 10) {
-    alert("กรุณากรอกเบอร์โทรศัพท์ให้ครบถ้วน 10 หลัก (เฉพาะตัวเลข ไม่ต้องใส่ขีด)");
+    alert("กรุณากรอกเบอร์โทรศัพท์ให้ครบถ้วน 10 หลัก (เฉพาะตัวเลข)");
     document.getElementById("phone").focus();
     return;
   }
@@ -262,13 +504,13 @@ document.getElementById("saveBtn").addEventListener("click", async () => {
     !data.learning_format ||
     !data.interviewer
   ) {
-    alert("กรุณากรอกข้อมูลให้ครบถ้วนทุกช่องก่อนบันทึกข้อมูล");
+    alert("กรุณากรอกข้อมูลให้ครบถ้วนทุกช่องก่อนยืนยัน");
     return;
   }
 
   try {
     btn.disabled = true;
-    btn.innerText = "กำลังบันทึก...";
+    btn.innerText = "กำลังประมวลผลธุรกรรม...";
 
     const response = await fetch(API, {
       method: "POST",
@@ -279,17 +521,17 @@ document.getElementById("saveBtn").addEventListener("click", async () => {
 
     const result = await response.json();
     if (result.success) {
-      alert("บันทึกสำเร็จ\nเหลือโควต้า " + result.remaining);
+      alert("จัดสรรทุนสำเร็จ!\nโควต้าคงเหลือ: " + result.remaining);
       location.reload();
     } else {
-      alert(result.message || "เกิดข้อผิดพลาด");
+      alert(result.message || "เกิดข้อผิดพลาดในการประมวลผล");
     }
   } catch (error) {
     console.error(error);
-    alert("ไม่สามารถเชื่อมต่อ Apps Script ได้");
+    alert("ไม่สามารถเชื่อมต่อเครือข่าย Apps Script ได้");
   } finally {
     btn.disabled = false;
-    btn.innerText = "บันทึกข้อมูล";
+    btn.innerText = "ยืนยันการจัดสรรทุนการศึกษา";
   }
 });
 </script>
