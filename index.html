@@ -27,12 +27,16 @@
   <div class="grid">
     <div class="form-group">
       <label>คณะ <span style="color:red;">*</span></label>
-      <select id="faculty"><option value="">กำลังดึงข้อมูล...</option></select>
+      <select id="faculty">
+        <option value="" disabled selected style="color: gray;">-- กำลังดึงข้อมูล... --</option>
+      </select>
     </div>
 
     <div class="form-group">
       <label>สาขา <span style="color:red;">*</span></label>
-      <select id="major"><option value="">เลือกสาขา</option></select>
+      <select id="major">
+        <option value="" disabled selected style="color: gray;">-- เลือกสาขา --</option>
+      </select>
     </div>
 
     <!-- Dropdown สถานที่เรียน -->
@@ -45,7 +49,9 @@
 
     <div class="form-group full">
       <label>ประเภททุน <span style="color:red;">*</span></label>
-      <select id="scholarship"><option value="">เลือกทุน</option></select>
+      <select id="scholarship">
+        <option value="" disabled selected style="color: gray;">-- เลือกทุน --</option>
+      </select>
       <div class="quota" id="quotaInfo"></div>
     </div>
 
@@ -57,7 +63,7 @@
     <div class="form-group">
       <label>คำนำหน้า <span style="color:red;">*</span></label>
       <select id="prefix">
-        <option value="">เลือกคำนำหน้า</option>
+        <option value="" disabled selected style="color: gray;">-- เลือกคำนำหน้า --</option>
         <option value="นาย">นาย</option>
         <option value="นางสาว">นางสาว</option>
         <option value="นาง">นาง</option>
@@ -82,7 +88,7 @@
     <div class="form-group">
       <label>รอบการเรียน <span style="color:red;">*</span></label>
       <select id="learning_format">
-        <option value="">เลือกรอบการเรียน</option>
+        <option value="" disabled selected style="color: gray;">-- เลือกรอบการเรียน --</option>
         <option value="ทำงานก่อน">ทำงานก่อน</option>
         <option value="เรียนก่อน">เรียนก่อน</option>
       </select>
@@ -105,7 +111,7 @@
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycby_eTuSwMXq1ItTpKFstQqeZxFQg1DMbpOSo6bFU14XGRgvT8n2GljYv3BGy0ETqdgTuQ/exec";
+const API = "https://script.google.com/macros/s/AKfycbzZo85CBe_qCvXCzAsOwIu8wE8ADy4kBXPT7u6VYRWDysQ2RX1aEymrapHJnmfHAAnucQ/exec";
 let allData = [];
 
 const faculty = document.getElementById("faculty");
@@ -120,19 +126,18 @@ loadData();
 
 async function loadData() {
   try {
-    // ใส่ ?t= เพื่อบังคับไม่ให้ Browser ใช้ Cache ตัวเก่าที่ค้างในเครื่อง
     const res = await fetch(API + "?t=" + new Date().getTime(), { method: "GET", redirect: "follow" });
     if (!res.ok) throw new Error("โหลดข้อมูลไม่สำเร็จ");
     allData = await res.json();
     
-    faculty.innerHTML = '<option value="">เลือกคณะ</option>';
+    faculty.innerHTML = '<option value="" disabled selected style="color: gray;">-- เลือกคณะ --</option>';
     const faculties = [...new Set(allData.map(x => x.faculty))];
     faculties.forEach(f => {
       faculty.innerHTML += `<option value="${f}">${f}</option>`;
     });
   } catch (error) {
     console.error(error);
-    faculty.innerHTML = '<option value="">โหลดข้อมูลไม่สำเร็จ</option>';
+    faculty.innerHTML = '<option value="" disabled selected style="color: gray;">โหลดข้อมูลไม่สำเร็จ</option>';
     alert("ไม่สามารถโหลดข้อมูลทุนได้ กรุณารีเฟรชหน้าเว็บ");
   }
 }
@@ -159,8 +164,8 @@ function updateCampusOptions() {
 }
 
 faculty.addEventListener("change", () => {
-  major.innerHTML = '<option value="">เลือกสาขา</option>';
-  scholarship.innerHTML = '<option value="">เลือกทุน</option>';
+  major.innerHTML = '<option value="" disabled selected style="color: gray;">-- เลือกสาขา --</option>';
+  scholarship.innerHTML = '<option value="" disabled selected style="color: gray;">-- เลือกทุน --</option>';
   quotaInfo.innerHTML = '';
 
   const majors = [
@@ -176,7 +181,7 @@ faculty.addEventListener("change", () => {
 });
 
 major.addEventListener("change", () => {
-  scholarship.innerHTML = '<option value="">เลือกทุน</option>';
+  scholarship.innerHTML = '<option value="" disabled selected style="color: gray;">-- เลือกทุน --</option>';
   quotaInfo.innerHTML = '';
 
   const scholarships = allData.filter(x =>
